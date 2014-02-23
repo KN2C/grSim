@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8.9)
 
 ## Project branding, version and package mantainer
 project(grSim)
-set(VERSION "1.0.1")
+set(VERSION "2.0.0")
 set(VENDOR "RoboIME")
 set(MAINTAINER "Jan Segre <jan@segre.in>")
 
