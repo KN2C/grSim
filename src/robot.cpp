@@ -415,7 +415,12 @@ void Robot::setSpeed(dReal vx, dReal vy, dReal vw)
 {
     // Calculate Motor Speeds
     dReal _DEG2RAD = M_PI / 180.0;
-    dReal motorAlpha[4] = {cfg->robotSettings.Wheel1Angle * _DEG2RAD, cfg->robotSettings.Wheel2Angle * _DEG2RAD, cfg->robotSettings.Wheel3Angle * _DEG2RAD, cfg->robotSettings.Wheel4Angle * _DEG2RAD};
+    dReal motorAlpha[4] = {
+      static_cast<dReal>(cfg->robotSettings.Wheel1Angle * _DEG2RAD),
+      static_cast<dReal>(cfg->robotSettings.Wheel2Angle * _DEG2RAD),
+      static_cast<dReal>(cfg->robotSettings.Wheel3Angle * _DEG2RAD),
+      static_cast<dReal>(cfg->robotSettings.Wheel4Angle * _DEG2RAD)
+    };
 
     dReal dw1 =  (1.0 / cfg->robotSettings.WheelRadius) * (( (cfg->robotSettings.RobotRadius * vw) - (vx * sin(motorAlpha[0])) + (vy * cos(motorAlpha[0]))) );
     dReal dw2 =  (1.0 / cfg->robotSettings.WheelRadius) * (( (cfg->robotSettings.RobotRadius * vw) - (vx * sin(motorAlpha[1])) + (vy * cos(motorAlpha[1]))) );

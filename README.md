@@ -31,7 +31,7 @@ grSim uses these libraries:
 Installation
 ------------
 
-Please refer to INSTALL file.
+Please refer to [INSTALL](INSTALL.md) file.
 
 
 Usage

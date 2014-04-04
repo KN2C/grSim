@@ -1,11 +1,11 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.9)
 
 
 ## Project branding, version and package mantainer
 project(grSim)
-set(VERSION "1.0.0a2")
-#set(VENDOR "Parsian")
-set(MAINTAINER "Mani Monajjemi <mani.monajjemi@gmail.com>")
+set(VERSION "2.0.0")
+set(VENDOR "RoboIME")
+set(MAINTAINER "Jan Segre <jan@segre.in>")
 
 
 # some utils and helper vars
@@ -51,11 +51,7 @@ list(APPEND libs ${OPENGL_LIBRARIES})
 #include_directories(${GLUT_INCLUDE_DIR})
 
 # Qt
-set(QT_USE_QTNETWORK true)
-set(QT_USE_QTOPENGL true)
-find_package(Qt4 REQUIRED)
-include(${QT_USE_FILE})
-list(APPEND libs ${QT_LIBRARIES})
+find_package(Qt5 REQUIRED)
 
 # ODE
 find_package(ODE REQUIRED)
@@ -89,7 +85,7 @@ protobuf_generate_cpp(PROTO_CPP PROTO_H
     src/proto/grSim_Packet.proto
 )
 
-qt4_add_resources(RESOURCES
+qt5_add_resources(RESOURCES
     resources/textures.qrc
 )
 
@@ -147,6 +143,8 @@ set(HEADERS
     src/config.h
 )
 
+file(GLOB CONFIG_FILES "config/*.ini")
+
 # files to be compiled
 set(srcs
     ${CONFIG_FILES}
@@ -157,15 +155,18 @@ set(srcs
     ${SOURCES}
 )
 
-file(GLOB CONFIG_FILES "config/*.ini")
-set_source_files_properties(${CONFIG_FILES}  PROPERTIES MACOSX_PACKAGE_LOCATION "config")
+set_source_files_properties(${CONFIG_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION "config")
+
+set(OSX_ICON "${PROJECT_SOURCE_DIR}/resources/icons/grsim.icns")
+set_source_files_properties(${OSX_ICON} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 
 if(APPLE)
     set(app ${CMAKE_PROJECT_NAME})
-    add_executable(${app} MACOSX_BUNDLE ${srcs})
+    add_executable(${app} MACOSX_BUNDLE ${srcs} ${OSX_ICON})
     target_link_libraries(${app} ${libs})
+    qt5_use_modules(${app} Core Widgets OpenGL Gui Network)
     install(TARGETS ${app} DESTINATION .)
-    set(MACOSX_BUNDLE_ICON_FILE "${PROJECT_SOURCE_DIR}/resources/icons/grsim.icns")
+    set(MACOSX_BUNDLE_ICON_FILE "grsim.icns")
     set(MACOSX_BUNDLE_SHORT_VERSION_STRING ${VERSION})
     set(MACOSX_BUNDLE_VERSION ${VERSION})
     set(MACOSX_BUNDLE_LONG_VERSION_STRING "Version ${VERSION}")
@@ -180,6 +181,7 @@ elseif(WIN32)
     set(app ${CMAKE_PROJECT_NAME})
     add_executable(${app} WIN32 ${srcs})
     target_link_libraries(${app} ${libs})
+    qt5_use_modules(${app} Core Widgets OpenGL Gui Network)
     install(TARGETS ${app} DESTINATION bin)
     install(DIRECTORY config DESTINATION .)
     install(DIRECTORY bin DESTINATION .
@@ -189,6 +191,7 @@ else()
     set(app ${CMAKE_PROJECT_NAME_LOWER})
     add_executable(${app} ${srcs})
     target_link_libraries(${app} ${libs})
+    qt5_use_modules(${app} Core Widgets OpenGL Gui Network)
     install(TARGETS ${app} DESTINATION bin)
     install(DIRECTORY config DESTINATION share/${app})
     install(FILES resources/grsim.desktop DESTINATION share/applications)
@@ -209,7 +212,7 @@ if(UNIX)
     execute_process(COMMAND uname -p OUTPUT_VARIABLE ARCH)
     string(STRIP ${ARCH} ARCH)
     if(APPLE)
-        set(ARCH "osx-universal")
+        set(ARCH "osx")
     endif()
 elseif(WIN32)
     set(ARCH "win32")
